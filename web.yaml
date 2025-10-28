@@ -25,8 +25,9 @@
   
   - name: Extract the frontend content.
     ansible.builtin.unarchive:
-     path: /tmp/web.zip
+     src: /tmp/web.zip
      dest: /usr/share/nginx/html
+     remote_src: yes
   
   - name: copy roboshop.conf  to the location
     ansible.builtin.copy:
