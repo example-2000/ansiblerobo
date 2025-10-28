@@ -6,27 +6,33 @@
     ansible.builtin.yum:
      name: nginx
      state: installed
+  
   - name: start & enable the ngnix service
     ansible.builtin.service:
      name: nginx
      state: started
      enabled: true
+  
   - name: removing the default content that web server is serving.
     ansible.builtin.file:
      path: /usr/share/nginx/html/
      state: absent
+  
   - name: Download the frontend content
     ansible.builtin.get_url:
      url: https://roboshop-builds.s3.amazonaws.com/web.zip
      dest: /tmp
+  
   - name: Extract the frontend content.
     ansible.builtin.unarchive:
-     src: web.zip
+     path: /tmp/web.zip
      dest: /usr/share/nginx/html
+  
   - name: copy roboshop.conf  to the location
     ansible.builtin.copy:
      src: roboshop.conf
      dest: /etc/nginx/default.d
+  
   - name: restart nginx 
     ansible.builtin.service:
      name: nginx
