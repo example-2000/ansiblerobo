@@ -28,8 +28,7 @@
     ansible.builtin.stat:
      path: /app
     register: directory
-    disable_gpg_check: true
-  
+    
   - name: print the directory
     ansible.builtin.debug:
      msg: "{{directory}}"
