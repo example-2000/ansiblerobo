@@ -3,10 +3,7 @@
   become: yes
   tasks:
   - name: disable mysql in os default 
-    ansible.builtin.service:
-     name: mysql
-     state: stopped
-     enabled: no
+    ansible.builtin.command: yum module disable mysql -y 
 
   - name: copy the repo file
     ansible.builtin.copy:
@@ -23,6 +20,6 @@
      name: mysqld
      state: started
      enabled: true
-     
+
   - name: change the root password 
     ansible.builtin.command: mysql_secure_installation --set-root-pass RoboShop@1
