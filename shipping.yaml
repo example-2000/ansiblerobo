@@ -43,7 +43,7 @@
      remote_src: yes
 
   - name: clean mvn packages
-    ansible.builtin.shell: "{{items}}"
+    ansible.builtin.shell: "{{item}}"
     args:
      chdir: /app
     loop:
