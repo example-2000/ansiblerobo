@@ -1,0 +1,76 @@
+- name: configure shipping module using playbook
+  hosts: shipping
+  become: yes
+  tasks:
+  - name: install maven
+    ansible.builtin.yum:
+     name: maven
+     state: installed
+  
+  - name: check whether the roboshop user is exists or not
+    ansible.builtin.command: id RoboShop
+    register: output
+    ignore_errors: true
+
+  - name: print the output
+    ansible.builtin.debug:
+     msg: "{{output}}"
+
+  - when: output.rc!=0
+    name: create the roboshop user
+    ansible.builtin.user:
+     name: roboshop
+  
+  - name: check whether the app directory exists or not
+    ansible.builtin.stat:
+     path: /app
+     register: directory
+  
+  - name: print the directory
+    ansible.builtin.debug:
+     msg: "{{directory}}"
+
+  - when: directory.stat.exists==false
+    name: create the app directory
+    ansible.builtin.file:
+     path: /app
+     state: directory
+  
+  - name: doqnload and unzip the appp code
+    ansible.builtin.unarchive:
+     src: https://roboshop-builds.s3.amazonaws.com/shipping.zip
+     dest: /tmp/shipping.zip
+     path: /app
+
+  - name: clean mvn packages
+    ansible.builtin.shell: "{{items}}"
+    args:
+     chdir: /app
+    loop:
+    - "mvn clean package"
+    - "mv target/shipping-1.0.jar shipping.jar"
+
+  - name: copy service file 
+    ansible.builtin.copy:
+     src: shipping.service
+     dest: /etc/systemd/system/shipping.service
+  
+  - name: daemon_reload
+    ansible.builtin.systemd:
+     daemon_reload: true
+  
+  - name: strat & enable the service
+    ansible.builtin.service:
+     name: shipping
+     state: started
+     enabled: true
+
+  - name: install mysql
+    ansible.builtin.yum:
+     name: mysql
+     state: installed
+
+  - name: restart the shipping
+    ansible.builtin.service:
+     name: shipping
+     state: restarted
