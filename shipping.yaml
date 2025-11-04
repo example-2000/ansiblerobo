@@ -39,8 +39,8 @@
   - name: doqnload and unzip the appp code
     ansible.builtin.unarchive:
      src: https://roboshop-builds.s3.amazonaws.com/shipping.zip
-     dest: /tmp/shipping.zip
-     path: /app
+     dest: /app
+     remote_src: yes
 
   - name: clean mvn packages
     ansible.builtin.shell: "{{items}}"
